@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "id": "irodori.hive",
   "name": "Hive Connector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "irodori",
   "description": "Hive Connector contributes the Hive database connector through the native connector ABI.",
   "license": "MIT OR 0BSD",
@@ -197,6 +197,22 @@
             {
               "id": "bearerToken",
               "label": "Bearer token",
+              "kind": "token",
+              "secretPurposes": [
+                "token"
+              ],
+              "fields": [
+                {
+                  "id": "token",
+                  "label": "Token",
+                  "type": "secret",
+                  "secretPurpose": "token"
+                }
+              ]
+            },
+            {
+              "id": "jwt",
+              "label": "JWT bearer token",
               "kind": "token",
               "secretPurposes": [
                 "token"

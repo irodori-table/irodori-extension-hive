@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "extensionId": "irodori.hive",
   "visibility": "public",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "connector": {
     "id": "hive.connector",
     "engine": "hive",
@@ -50,6 +50,7 @@
       "userPassword",
       "basic",
       "bearerToken",
+      "jwt",
       "oauth2",
       "kerberos",
       "ldap",

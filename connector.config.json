@@ -192,6 +192,22 @@
           ]
         },
         {
+          "id": "jwt",
+          "label": "JWT bearer token",
+          "kind": "token",
+          "secretPurposes": [
+            "token"
+          ],
+          "fields": [
+            {
+              "id": "token",
+              "label": "Token",
+              "type": "secret",
+              "secretPurpose": "token"
+            }
+          ]
+        },
+        {
           "id": "oauth2",
           "label": "OAuth 2.0",
           "kind": "oauth2",
@@ -652,6 +668,22 @@
       {
         "id": "bearerToken",
         "label": "Bearer token",
+        "kind": "token",
+        "secretPurposes": [
+          "token"
+        ],
+        "fields": [
+          {
+            "id": "token",
+            "label": "Token",
+            "type": "secret",
+            "secretPurpose": "token"
+          }
+        ]
+      },
+      {
+        "id": "jwt",
+        "label": "JWT bearer token",
         "kind": "token",
         "secretPurposes": [
           "token"

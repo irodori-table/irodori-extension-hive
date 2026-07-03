@@ -1,63 +1,74 @@
 # Hive Connector
 
-Adds Apache Hive and Hive Metastore connectivity as an installable connector extension.
+Native Irodori Table connector extension for Hive.
 
-This connector is listed in the public Irodori extension marketplace.
+This crate packages the connector metadata, native ABI exports, and driver implementation used by the Irodori extension marketplace.
 
 ## Connector
 
 - Extension ID: `irodori.hive`
 - Engine ID: `hive`
-- Wire: `jdbc`
+- Wire protocol: `jdbc`
 - Default port: `10000`
 - Native ABI: `irodori.connector.native.v1`
-- Driver linked: `true`
+- Driver linked: `yes`
+- Marketplace visibility: `public`
+- Package version: `0.1.1`
 
-No desktop adapter source exists yet; this package starts from the refactored ABI shim and connector metadata.
+The package uses the connector metadata and native driver directly; no desktop adapter source snapshot is required.
 
 Connector metadata lives in `connector.config.json` and `irodori.extension.json`.
-The Rust code keeps native ABI exports in `src/lib.rs`, shared buffer/JSON helpers in `src/abi.rs`, and DuckDB-backed lakehouse behavior in `src/driver.rs`.
+The Rust crate exports the native ABI from `src/lib.rs`, uses `irodori-connector-abi` for shared JSON/buffer helpers, and keeps connector behavior in `src/driver.rs`.
 
 ## Connection Metadata
 
 - Endpoint modes: `catalog`, `objectStorage`, `jdbc`, `connectionString`
 - Transport modes: `direct`, `sshTunnel`, `socks5Proxy`, `httpConnectProxy`, `proxyChain`
-- TLS supported: `true`
-- Custom driver options: `true`
+- TLS supported: `yes`
+- TLS required by default: `no`
+- Custom driver options: `yes`
 
-| Auth method | Label | Secret purposes |
-|---|---|---|
-| `none` | No authentication | none |
-| `connectionString` | Connection string / DSN | none |
-| `userPassword` | User/password | `password` |
-| `basic` | Basic authentication | `password` |
-| `bearerToken` | Bearer token | `token` |
-| `oauth2` | OAuth 2.0 | `token` |
-| `kerberos` | Kerberos / GSSAPI | `token` |
-| `ldap` | LDAP user/password | `password` |
-| `clientCertificate` | Client certificate / mTLS | `privateKey`, `privateKeyPassphrase` |
-| `customDriverOptions` | Custom driver options | `password`, `token`, `privateKey`, `privateKeyPassphrase` |
+### Endpoint Fields
 
-## ABI Calls
+| Field | Label | Type | Required |
+| --- | --- | --- | --- |
+| `catalogUri` | Catalog URI | `uri` | no |
+| `warehouse` | Warehouse path | `string` | no |
 
-The driver handles these JSON requests today:
+## Authentication
+
+The connector advertises these authentication modes so clients can render the right credential fields. Driver-specific or provider-specific values can still be passed through `options` when needed.
+
+| Auth method | Label | Kind | Secret purposes |
+| --- | --- | --- | --- |
+| `none` | No authentication | `none` | none |
+| `connectionString` | Connection string / DSN | `connectionString` | none |
+| `userPassword` | User/password | `userPassword` | `password` |
+| `basic` | Basic authentication | `userPassword` | `password` |
+| `bearerToken` | Bearer token | `token` | `token` |
+| `jwt` | JWT bearer token | `token` | `token` |
+| `oauth2` | OAuth 2.0 | `oauth2` | `token` |
+| `kerberos` | Kerberos / GSSAPI | `kerberos` | `token` |
+| `ldap` | LDAP user/password | `userPassword` | `password` |
+| `clientCertificate` | Client certificate / mTLS | `certificate` | `privateKey`, `privateKeyPassphrase` |
+| `customDriverOptions` | Custom driver options | `custom` | `password`, `token`, `privateKey`, `privateKeyPassphrase` |
+
+## Native ABI Calls
 
 | Method | Response |
-|---|---|
-| `health` / `ping` | Connector health, engine id, ABI version, and driver link status. |
-| `describe` / `capabilities` | Embedded manifest and connector config. |
-| `manifest` | Raw `irodori.extension.json`. |
-| `config` | Raw `connector.config.json`. |
-| `connect` | Opens an embedded DuckDB lakehouse runtime and creates a table view when a path is provided. |
-| `query` | Runs SQL through the embedded runtime. |
-| `metadata` | Reads view/table metadata through `information_schema`. |
-| `close` | Removes the cached native connection. |
+| --- | --- |
+| `health` | Returns connector health, engine id, ABI version, and driver status. |
+| `describe` | Returns the embedded manifest and connector config. |
+| `manifest` | Returns raw `irodori.extension.json`. |
+| `config` | Returns raw `connector.config.json`. |
+| `connect` | Opens and validates a native connector connection. |
+| `query` | Runs a connector query and returns structured rows or JSON results. |
+| `metadata` | Reads schemas, tables, columns, indexes, collections, or equivalent metadata. |
+| `close` | Closes and removes a cached native connection. |
 
 ## Development
 
-
-Generated extension repositories share `../target` across sibling repositories so Rust dependencies are compiled once per checkout. DuckDB and MotherDuck are driver-linked by default; set `IRODORI_CONNECTOR_LINK_DUCKDB=0` only when you need metadata-only DuckDB-compatible scaffolds.
-
+All extension crates in this checkout share `../target` so dependencies compile once across sibling repositories.
 
 ```sh
 make check
