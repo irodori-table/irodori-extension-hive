@@ -7,7 +7,7 @@
   "publisher": "irodori",
   "description": "Hive Connector contributes the Hive database connector through the native connector ABI.",
   "license": "MIT OR 0BSD",
-  "repository": "https://github.com/hjosugi/irodori-extension-hive",
+  "repository": "https://github.com/irodori-table/irodori-extension-hive",
   "apiVersion": "0.1",
   "runtime": "native",
   "entry": "dist/native",
